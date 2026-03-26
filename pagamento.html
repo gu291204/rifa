@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagamento</title>
+</head>
+
+<body>
+
+<h1>Pagamento via PIX</h1>
+
+<p>Números escolhidos:</p>
+<p id="numeros"></p>
+
+<p>Total: R$ <span id="total"></span></p>
+
+<hr>
+
+<p>Chave PIX:</p>
+<p><strong>51914439856</strong></p>
+
+<button onclick="enviarWhats()">Enviar comprovante no WhatsApp</button>
+
+<script>
+  var dados = JSON.parse(localStorage.getItem("rifa"));
+
+  if (!dados) {
+    alert("Erro! Volte e escolha os números.");
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("numeros").innerText = dados.numeros.join(", ");
+  document.getElementById("total").innerText = dados.total;
+
+  function enviarWhats() {
+    var numeros = dados.numeros.join(", ");
+    var total = dados.total;
+
+    var mensagem = "Olá! Acabei de pagar a rifa 🎟️\n\n" +
+                   "Números: " + numeros + "\n" +
+                   "Total: R$ " + total + "\n\n" +
+                   "Segue o comprovante:";
+
+    var telefone = "5519993474590"; // MUDA AQUI
+
+    var url = "https://wa.me/" + telefone + "?text=" + encodeURIComponent(mensagem);
+
+    window.open(url, "_blank");
+  }
+</script>
+
+</body>
+</html>

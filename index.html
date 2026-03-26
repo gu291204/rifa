@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Rifa Online</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 10px;
+      max-width: 500px;
+      margin: 20px auto;
+    }
+
+    .numero {
+      padding: 15px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .selecionado {
+      background: green;
+      color: white;
+    }
+
+    .ocupado {
+      background: red;
+      color: white;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🎟️ Rifa Online</h1>
+
+<div class="grid" id="grid"></div>
+
+<p>Selecionados: <span id="selecionados"></span></p>
+<p>Total: R$ <span id="total">0</span></p>
+
+<button onclick="pagar()">Ir para pagamento</button>
+
+<script>
+  const preco = 5;
+  const totalNumeros = 50;
+
+  let selecionados = [];
+  let ocupados = JSON.parse(localStorage.getItem("ocupados")) || [];
+
+  const grid = document.getElementById("grid");
+
+  function render() {
+    grid.innerHTML = "";
+
+    for (let i = 1; i <= totalNumeros; i++) {
+      const div = document.createElement("div");
+      div.classList.add("numero");
+      div.innerText = i;
+
+      if (ocupados.includes(i)) {
+        div.classList.add("ocupado");
+      } else if (selecionados.includes(i)) {
+        div.classList.add("selecionado");
+      }
+
+      div.onclick = () => selecionar(i);
+      grid.appendChild(div);
+    }
+
+    document.getElementById("selecionados").innerText = selecionados.join(", ");
+    document.getElementById("total").innerText = selecionados.length * preco;
+  }
+
+  function selecionar(num) {
+    if (ocupados.includes(num)) return;
+
+    if (selecionados.includes(num)) {
+      selecionados = selecionados.filter(n => n !== num);
+    } else {
+      selecionados.push(num);
+    }
+
+    render();
+  }
+
+  function pagar() {
+    if (selecionados.length === 0) {
+      alert("Escolha pelo menos um número!");
+      return;
+    }
+
+    // 🔒 RESERVA OS NÚMEROS
+    ocupados = ocupados.concat(selecionados);
+    localStorage.setItem("ocupados", JSON.stringify(ocupados));
+
+    localStorage.setItem("rifa", JSON.stringify({
+      numeros: selecionados,
+      total: selecionados.length * preco
+    }));
+
+    window.location.href = "pagamento.html";
+  }
+
+  render();
+</script>
+
+</body>
+</html>
